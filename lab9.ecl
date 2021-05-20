@@ -99,35 +99,5 @@ assign_boxes([Box|Boxes],List,W) :-
 	assign_boxes(Boxes, List, RestW),
 	W #= WBox + RestW.
 
+	
 % 5.
-
-provider(a,[0,750,1000,1500],[0,10,13,17]).
-provider(b,[0,500,1250,2000],[0,8,12,22]).
-provider(c,[0,1000,1750,2000],[0,15,18,25]).
-provider(d,[0,1000,1500,1750],[0,13,15,17]).
-
-space(Plans,Cost) :-
-	findall(P, provider(P,_,_), Providers),
-	assign_space(Providers, Plans, Cost),
-	ic_global:sumlist(Plans) #= SumPlans,
-	SumPlans #>= 3600,
-	SumPlans #=< 4600,
-	bb_min(labeling(Plans), Cost, _).
-	
-	
-assign_space([],[],0).
-
-assign_space([Prov|RestProv], [PlanValue|RestPlans], Cost) :-
-	provider(Prov, Plans, Prices),
-	element(I, Plans, PlanValue),
-	element(I, Prices, PriceValue),
-	alldifferent(Plans),
-	assign_space(RestProv, RestPlans, RestCost),
-	Cost #= PriceValue + RestCost.	
-	
-	
-	
-
-
-
-
