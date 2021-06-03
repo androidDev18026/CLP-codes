@@ -82,3 +82,4 @@ labelSets([]).
 labelSets([G|Groups]):-
 	insetdomain(G,_,_,_), 
 	labelSets(Groups).	
+		
