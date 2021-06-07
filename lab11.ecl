@@ -47,6 +47,43 @@ pprint([_|Groups],Nums):-
 	nl, pprint(Groups,Nums).
 
 
+%%% fair_father with N children
+%%% Exec 11
+
+fair_father_N(N,S):-
+  houses(H),
+  length(S,N),
+  length(H,HousesL),
+
+  intsets(S,N,1,HousesL),
+  AHouses =..[[]|H],
+  sum(H, SumH),
+  constr_houses(S,AHouses,Cards,Sums,SumH, N),
+ 
+  Cards #= HousesL,
+  Sums #= SumH,
+
+  all_disjoint(S),
+  label_set(S).
+    
+
+label_set([]).
+label_set([S|RestS]):-
+  insetdomain(S,_,_,_),
+  label_set(RestS).  
+
+
+constr_houses([],_,_,_,_,_).
+constr_houses([S|SAll], Houses, Card, TotalSumS, Total, N):-
+  weight(S, Houses, SumS),
+  #(S, C),
+  SumS * N #= Total, 
+  constr_houses(SAll, Houses, RestCard, RestSumS, Total, N),
+  Card #= C + RestCard,
+  TotalSumS #= SumS + RestSumS.
+  
+  
+
 %% Exercise 2
 
 value([10,30,45,50,65,70,75,80,90,100]).
