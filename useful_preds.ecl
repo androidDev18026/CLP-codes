@@ -96,3 +96,88 @@ intersect_2([G1|L1],L2,[G1|L]):-
 
 intersect_2([_|L1],L2,L):-	
 	intersect_2(L1,L2,L).
+	
+%% Union of 2 Lists
+%% union_1/3
+
+union_1(L1,L2,L):-
+	setof(X,(member(X,L1);member(X,L2)),L).
+
+
+%% union_2/3 (Alt.)
+union_2([],L,L).
+union_2([H|L1],L2,L):-
+	member(H,L2),!,
+	union_2(L1,L2,L).
+	
+union_2([H|L1],L2,[H|L]):-
+	union_2(L1,L2,L).
+
+
+%% Function result that takes 2 args.
+%% func/3
+
+root(X,N):- N is X^(1/2).
+square(X,N):- N is X*X.
+
+func(F, X1, Res):-
+	C =.. [F,X1,Res],
+	C.
+
+
+%% Find path in graphs from node S(Start) --> F(Finish)
+%% example goto/3 (from,to,cost)
+goto(a,b,4).
+goto(a,c,2).
+goto(c,a,5).
+goto(b,d,7).
+goto(d,c,10).
+goto(d,e,1).
+
+dfs(From,To,Cost,Route):-
+	dfs(From,To,[From],Cost,Route).
+
+dfs(From, To, [From|Visited], Cost, [From,To]):-
+	goto(From,To,Cost),
+	not(member(To, Visited)).
+
+dfs(From,To,Visited,Cost,[From|Route]):-
+	goto(From, Temp, TCost),
+	not(member(Temp,Visited)),
+	dfs(Temp, To, [Temp|Visited], ACost, Route),
+	Cost is TCost + ACost.
+
+%% CLP Constraints - Scheduling
+
+%% N Trucks cross bridge w/ 20 tn. max load - goal -> minimize time to go across.
+
+car(alpha, 10, 4).
+car(beta, 13,5).
+car(gamma, 8, 3).
+car(delta, 5, 4).
+car(ephilon, 7, 1).
+car(zita, 9, 3).
+car(eta, 11, 6).
+
+cross_bridge(Trucks, Starts, MinTime):-
+	findall(T, car(T,_,_), Trucks),
+	
+	length(Trucks, N),
+	length(Starts, N),
+	
+	Starts #:: 0..inf,
+	
+	apply_const_trucks(Trucks,Speeds,Starts,Weights,Ends),
+	
+	cumulative(Starts,Speeds,Weights,20),
+	
+	ic_global:maxlist(Ends,MinTime),
+	
+	bb_min(labeling(Starts),MinTime,bb_options{strategy:restart}).
+	
+apply_const_trucks([],[],[],[],[]).
+apply_const_trucks([T|Trucks],[Speed|Speeds],[S|Starts],[W|Weights],[E|Ends]):-
+	car(T,W,Speed),
+	S + Speed #= E,
+	apply_const_trucks(Trucks, Speeds, Starts, Weights, Ends).
+
