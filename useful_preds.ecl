@@ -181,3 +181,70 @@ apply_const_trucks([T|Trucks],[Speed|Speeds],[S|Starts],[W|Weights],[E|Ends]):-
 	S + Speed #= E,
 	apply_const_trucks(Trucks, Speeds, Starts, Weights, Ends).
 
+
+%% 100 licences, 6 profs., lectures from 9-21, minimize end time
+
+class(clp,3,40,3).
+class(procedural,3,60,2).
+class(analysis,4,50,2).
+class(computer_sys,4,40,3).
+class(algebra,3,40,4).
+class(hpc,3,10,1).
+
+lectures(Lectures, Starts, Makespan):-
+	findall(Lect, class(Lect,_,_,_), Lectures),
+	
+	length(Lectures, N),
+	length(Starts, N),
+	
+	Starts #:: 9..21,
+	
+	apply_const(Starts,Durations,Licences,Teachers,Ends,Lectures),
+	
+	cumulative(Starts,Durations,Teachers,6),
+	cumulative(Starts,Durations,Licences,100),
+	
+	ic_global:maxlist(Ends,Makespan),
+	
+	bb_min(labeling(Starts),Makespan,bb_options{strategy:restart}).
+	
+	
+apply_const([],[],[],[],[],[]).
+apply_const([S|Starts],[Dur|Durs],[Lic|Lics],[Tch|Tchs],[End|Ends],[Lect|Lectures]):-
+	class(Lect, Dur, Lic, Tch),
+	S + Dur #= End,
+	End #=< 21,
+	apply_const(Starts,Durs,Lics,Tchs,Ends,Lectures).
+	
+
+%% IC Sets
+nums([2, 4, 5, 11, 14, 17, 18, 21, 55, 67, 89, 98]).
+
+split_nums(N, S):-
+	nums(X),
+	
+	length(X,NN),
+	intsets(S,N,1,NN),
+	
+	Array =.. [a|X],
+	
+	split_nums_const(S,Array,Card),
+	Card #= NN,
+	
+	all_disjoint(S),
+	
+	labelingSets(S).
+	
+labelingSets([]).
+labelingSets([S|Rest]):-
+	insetdomain(S,increasing,_,_),
+	labelingSets(Rest).
+	
+
+split_nums_const([],_,0).	
+split_nums_const([S|RestS],Array,Cards):-
+	#(S, C), C#>=2,
+	weight(S,Array,SumW),
+	SumW #> 20,
+	split_nums_const(RestS,Array,RCards),
+	Cards #= C + RCards.
