@@ -94,6 +94,16 @@ replace(X,Y,[X|R],[Y|R]).
 replace(X,Y,[H1|R1],[H1|R2]):-
 	replace(X,Y,R1,R2).
 
+%% Replace all X with Y in a list, return new list.
+replace_all(_,_,[],[]).
+replace_all(X,Y,[X|R1],[Y|R2]):-
+	!,
+	replace_all(X,Y,R1,R2).
+
+replace_all(X,Y,[H1|R1],[H1|R2]):-
+	replace_all(X,Y,R1,R2).
+	
+	
 %% Concatenate 2 Lists
 concat([],L,L).
 concat([H|L1],L2,[H|L]):-
