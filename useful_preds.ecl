@@ -45,6 +45,7 @@ sublist_mem(El, List):-
 delete_all(Y, L1, L):-
 	findall(X, (member(X, L1), X \== Y), L).
 
+
 %% Delete All X from List (Alt.)
 %% delete_all_2/3
 
@@ -60,6 +61,38 @@ delete_all_2(X,[_|T],L) :-
 delete_one(X, [X|T], T):-!.
 delete_one(X, [H|T], [H|Res]):-
 	delete_one(X,T,Res).
+
+%% Range of numbers in [Low,High] one-by-one w/ backtracking 
+int_in_range(Low,High,Low).
+int_in_range(Low,High,Res):-
+	NewLow is Low + 1,
+	NewLow =< High,
+	int_in_range(NewLow,High,Res).
+
+
+%% Fibonacci sequence
+fib(1,1).
+fib(2,1).
+fib(N,X):-
+	N>2,
+	NN is N-1,
+	fib(NN, X1),
+	NNN is N-2,
+	fib(NNN,X2),
+	X is X1+X2.
+
+
+%% Replace element X of a List with element Y
+%% Backtrack to replace all instances one-by-one
+%% E.g ?- replace(1,a,[1,2,1,1,3],R).
+%%
+%%        R = [a, 2, 1, 1, 3] ;
+%%        R = [1, 2, a, 1, 3] ;
+%%        R = [1, 2, 1, a, 3] ;
+       
+replace(X,Y,[X|R],[Y|R]).
+replace(X,Y,[H1|R1],[H1|R2]):-
+	replace(X,Y,R1,R2).
 
 %% Concatenate 2 Lists
 concat([],L,L).
