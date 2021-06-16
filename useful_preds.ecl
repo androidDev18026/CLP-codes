@@ -102,8 +102,67 @@ replace_all(X,Y,[X|R1],[Y|R2]):-
 
 replace_all(X,Y,[H1|R1],[H1|R2]):-
 	replace_all(X,Y,R1,R2).
+
+%% count odd numbers in a list
+count_odd([],0).
+count_odd([H|T], Res) :-
+	1 is H mod 2,!,
+	count_odd(T,Rest),
+	Res is Rest+1.
+
+count_odd([_|T], Res) :-
+	count_odd(T,Res).
+
+%% check if a list is symmetric e.g. [1,2,3,1,2,3]
+symmetric(L):-
+	append(L1,L1,L).
+
+%% check if L1 is at the end of L2
+end_sublist(L1,L2):-
+	append(L,L1,L2).
+
+%% Check if L1 is present 2 times in L2
+twice_sublist(L1,L2):-
+	append(X,Y,L2),
+	sublist(L1,X),
+	sublist(L1,Y).
+
+%% Get the last element of list L
+last_element(L,X):-
+	append(_,L1,L),
+	length(L1,1),
+	[X] = L1. 
+
+%% Find 1 missing letter from misspelled word
+word([p,r,o,l,o,g]).
+word([m,a,t,h,s]).
+
+missing_letter(L,X,W):-
+	word(W),
+	append(L1,L2,L),
+	append(L1,[X|L2],W).
+
+%% Reverse list using append/3
+reverse_alt([],[]).
+reverse_alt([H|L1],L2):-
+	reverse_alt(L1,R),
+	append(R, [H], L2).
 	
-	
+%% Reverse list
+reverse2(List, Rev) :-
+    reverse2(List, Rev, []).
+
+reverse2([], L, L).
+reverse2([H|T], L, SoFar) :-
+    reverse2(T, L, [H|SoFar]).
+
+%% Check if X is present only once in the List
+unique_el(X,L):-
+	member(X,L),
+	delete(X,L,LL),
+	not(member(X,LL)).
+
+
 %% Concatenate 2 Lists
 concat([],L,L).
 concat([H|L1],L2,[H|L]):-
