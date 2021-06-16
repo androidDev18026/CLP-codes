@@ -226,6 +226,13 @@ func(F, X1, Res):-
 	C =.. [F,X1,Res],
 	C.
 
+%% Map each item in List to a function w/ 1 input
+map(_,[],[]).
+map(Op, [H|List], [R|L]):-
+	C =.. [Op, H, R],
+	C,
+	map(Op,List,L).
+	
 %% Reduce List to a single number by applying Operator Op to its items
 reduce(_,[X],X).	
 reduce(Op,[X,Y|List],Res):-
