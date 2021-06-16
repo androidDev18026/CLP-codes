@@ -226,7 +226,14 @@ func(F, X1, Res):-
 	C =.. [F,X1,Res],
 	C.
 
-
+%% Reduce List to a single number by applying Operator Op to its items
+reduce(_,[X],X).	
+reduce(Op,[X,Y|List],Res):-
+	member(Op,[max,min,plus,times]),
+	C =.. [Op,X,Y,Z],
+	C,
+	reduce(Op, [Z|List], Res).
+	
 %% Find path in graphs from node S(Start) --> F(Finish)
 %% example goto/3 (from,to,cost)
 goto(a,b,4).
