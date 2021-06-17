@@ -242,6 +242,8 @@ reduce(Op,[X,Y|List],Res):-
 	reduce(Op, [Z|List], Res).
 
 %% Arithmetic sequence of numbers - checks missing in between and adds them
+%% E.g [1,2,5,7] --> [1,2,3,4,5,6,7]
+
 series([],[]).
 series([H1,H2|T], [H1|L]):-
 	Diff is H2 - H1, 
