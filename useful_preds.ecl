@@ -240,7 +240,19 @@ reduce(Op,[X,Y|List],Res):-
 	C =.. [Op,X,Y,Z],
 	C,
 	reduce(Op, [Z|List], Res).
-	
+
+%% Arithmetic sequence of numbers - checks missing in between and adds them
+series([],[]).
+series([H1,H2|T], [H1|L]):-
+	Diff is H2 - H1, 
+	Diff > 1,
+	!,
+	More is H1 + 1,
+	series([More,H2|T],L).
+
+series([H|T],[H|L]):-
+	series(T,L).
+
 %% Find path in graphs from node S(Start) --> F(Finish)
 %% example goto/3 (from,to,cost)
 goto(a,b,4).
